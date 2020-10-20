@@ -31,6 +31,7 @@ for f in file_path:
 
 '''檔案選擇'''
 
+
 def select_file():
     first_file = eval(input('請選擇第一個檔案為何：'))
     data_list = []
@@ -43,12 +44,12 @@ def select_file():
     return data_list
 
 
-def clean_data(file_path):
-    df1 = pd.read_excel(file_path[0], None)
+def clean_data(f_path):
+    df1 = pd.read_excel(f_path[0], None)
     df1_sheet_list = list(df1.keys())
     df1 = df1[df1_sheet_list[0]]
     df1.columns = df1.columns.str.strip()
-    df2 = pd.read_excel(file_path[1], None)
+    df2 = pd.read_excel(f_path[1], None)
     df2 = df2['明細']
     df2.columns = df2.columns.str.strip()
     x = df1['摘要'].str.split('/', expand=True)
@@ -62,22 +63,24 @@ def clean_data(file_path):
     df2 = df2.rename(columns={'請購品名規格': '摘要', '請購單號': '請購單', '採購本幣小計': '金額'})
     df1['摘要'] = df1['摘要'].str.strip()
     df2['摘要'] = df2['摘要'].str.strip()
-    result = pd.merge(df1, df2, on=['摘要', '金額'], how='inner')
-    result = result.drop_duplicates(keep="first")
-    print(result)
-    return result
+    final_result = pd.merge(df1, df2, on=['摘要', '金額'], how='inner')
+    final_result = final_result.drop_duplicates(keep="first")
+    print(final_result)
+    return final_result
+
 
 def main():
     datasets = select_file()
-    result = clean_data(datasets)
+    final_result = clean_data(datasets)
     print('請選擇要儲存的地方')
     root = tk.Tk()
     root.withdraw()
 
-    file_path = filedialog.askdirectory()
-    print('你要儲存的資料夾是：', file_path)
+    f_path = filedialog.askdirectory()
+    print('你要儲存的資料夾是：', f_path)
     file_name = input('請輸入要儲存的檔案名稱：(請勿加上副檔名)\n')
-    result.to_excel(file_path + '/' + file_name + '.xlsx', index=False)
+    final_result.to_excel(f_path + '/' + file_name + '.xlsx', index=False)
+
 
 main()
 

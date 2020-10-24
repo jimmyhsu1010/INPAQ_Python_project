@@ -48,7 +48,7 @@ def change_name(data):
 
 '''三廠處理的function'''
 # 竹南元件出貨明細表整理
-def zhunan_component_processing(file_path, file_name):
+def zhunan_component_processing(file_path, file_name, export_path):
     df = pd.read_excel(file_path, header=1)
     #     df.keys()
     #     df = df['axmr4301']
@@ -92,15 +92,15 @@ def zhunan_component_processing(file_path, file_name):
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
                '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '匯率', '本國幣別 NTD', '客戶料號', '客戶希交日', 'Term']
     result = df.reindex(columns=columns)
-    print('請選擇輸出資料夾')
-    export_path = get_file_path()
+    # print('請選擇輸出資料夾')
+    # export_path = get_file_path()
     # export_file_name = 'C:\\Users\\kaihsu\\Desktop\\業績總表\\' + file_name # PC使用
     export_file_name = export_path + '/' + file_name  # Mac使用
     result.to_excel(export_file_name, index=False)
 
 
 # 無錫元件出貨明細表整理
-def wuxi_component_processing(file_path, file_name):
+def wuxi_component_processing(file_path, file_name, export_path):
     df = pd.read_excel(file_path, header=1)
     #     df.keys()
     #     df = df['axmr4301']
@@ -160,15 +160,15 @@ def wuxi_component_processing(file_path, file_name):
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
                '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '匯率', '本國幣別 CNY', '客戶料號', '客戶希交日', 'Term']
     result = df.reindex(columns=columns)
-    print('請選擇輸出資料夾')
-    export_path = get_file_path()
+    # print('請選擇輸出資料夾')
+    # export_path = get_file_path()
     # export_file_name = 'C:\\Users\\kaihsu\\Desktop\\業績總表\\' + file_name
     export_file_name = export_path + '/' + file_name  # Mac使用
     result.to_excel(export_file_name, index=False)
 
 
 # 天線出貨明細表整理
-def antenna_processing(file_path, file_name):
+def antenna_processing(file_path, file_name, export_path):
     df = pd.read_excel(file_path, header=1)
     #     df.keys()
     #     df = df['axmr4301']
@@ -218,34 +218,64 @@ def antenna_processing(file_path, file_name):
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
                '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '匯率', '本國幣別 NTD', '客戶料號', '客戶希交日', 'Term']
     result = df.reindex(columns=columns)
-    print('請選擇輸出資料夾')
-    export_path = get_file_path()
+    # print('請選擇輸出資料夾')
+    # export_path = get_file_path()
     # export_file_name = 'C:\\Users\\kaihsu\\Desktop\\業績總表\\' + file_name
     export_file_name = export_path + '/' + file_name  # Mac使用
     result.to_excel(export_file_name, index=False)
 
 
-def starter():
+# def starter():
+#     print('請選擇要處理的檔案！')
+#     file_paths = get_file_paths()
+#     y = display(file_paths)
+#     zhunan_2020 = int(input('請選擇竹南廠2020年的檔案：\n'))
+#     file_path, file_name = file_info(zhunan_2020, y)
+#     zhunan_component_processing(file_path, file_name)
+#     zhunan_2019 = int(input('請選擇竹南廠2019年的檔案：\n'))
+#     file_path, file_name = file_info(zhunan_2019, y)
+#     zhunan_component_processing(file_path, file_name)
+#     wuxi_component = int(input('請選擇無錫元件的檔案：\n'))
+#     file_path, file_name = file_info(wuxi_component, y)
+#     wuxi_component_processing(file_path, file_name)
+#     wuxi_odm = int(input('請選擇無錫OEM的檔案：\n'))
+#     file_path, file_name = file_info(wuxi_odm, y)
+#     wuxi_component_processing(file_path, file_name)
+#     rf = int(input('請選擇天線出貨明細的檔案：\n'))
+#     file_path, file_name = file_info(rf, y)
+#     antenna_processing(file_path, file_name)
+#     print('處理完畢')
+#     # print(y) ?
+
+'''一次整理所有的檔案'''
+
+
+def preprocessing_data():
     print('請選擇要處理的檔案！')
     file_paths = get_file_paths()
     y = display(file_paths)
-    zhunan_2020 = int(input('請選擇竹南廠2020年的檔案：\n'))
-    file_path, file_name = file_info(zhunan_2020, y)
-    zhunan_component_processing(file_path, file_name)
-    zhunan_2019 = int(input('請選擇竹南廠2019年的檔案：\n'))
-    file_path, file_name = file_info(zhunan_2019, y)
-    zhunan_component_processing(file_path, file_name)
-    wuxi_component = int(input('請選擇無錫元件的檔案：\n'))
-    file_path, file_name = file_info(wuxi_component, y)
-    wuxi_component_processing(file_path, file_name)
-    wuxi_odm = int(input('請選擇無錫OEM的檔案：\n'))
-    file_path, file_name = file_info(wuxi_odm, y)
-    wuxi_component_processing(file_path, file_name)
-    rf = int(input('請選擇天線出貨明細的檔案：\n'))
-    file_path, file_name = file_info(rf, y)
-    antenna_processing(file_path, file_name)
-    print('處理完畢')
-    # print(y)
+    a, b, c, d, e = map(int, input('請填入處理順序:（竹南元件2020，竹南元件2019，無錫元件，無錫ODM，天線）\n').split())
+    preprocessing_order = [a, b, c, d, e]
+    print('請選擇要匯出檔案的資料夾')
+    export_path = get_file_path()
+    for file in preprocessing_order:
+        if preprocessing_order.index(file) <= 1:
+            file_path = y[file]
+            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            zhunan_component_processing(file_path, file_name, export_path)
+        elif preprocessing_order.index(file) == 2:
+            file_path = y[file]
+            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            wuxi_component_processing(file_path, file_name, export_path)
+        elif preprocessing_order.index(file) == 3:
+            file_path = y[file]
+            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            wuxi_component_processing(file_path, file_name, export_path)
+        else:
+            file_path = y[file]
+            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            antenna_processing(file_path, file_name, export_path)
+
 
 '''將所有檔案的資料合併為一個檔案'''
 def merge_files():
@@ -264,7 +294,8 @@ def merge_files():
     print('輸出完成！')
 
 def main():
-    starter()
+    # starter()
+    preprocessing_data()
     merge_files()
 
 main()

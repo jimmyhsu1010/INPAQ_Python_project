@@ -1,6 +1,7 @@
 import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
+import time
 
 '''選取單一檔案路徑
     存檔輸出的時候使用'''
@@ -295,7 +296,11 @@ def merge_files():
 
 def main():
     # starter()
+    start_time = time.process_time()
     preprocessing_data()
     merge_files()
+    end_time = time.process_time()
+    total_time = end_time - start_time
+    print('程式執行時間為{}秒。'.format(round(total_time, 2)))
 
 main()

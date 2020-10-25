@@ -126,15 +126,16 @@ def wuxi_component_processing(file_path, file_name, export_path):
     keep_columns = ['狀態', '銷售單號', '月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單位',
                     '單價', '匯率', '本國幣別 CNY', '客戶料號', '客戶希交日', 'Term']
     df = df[keep_columns]  # 需要留下來的欄位建立新表格
+    df = df.rename(columns={'本國幣別 CNY': '本國幣別 NTD'})
 
     columns_strip = ['狀態', '銷售單號', '客戶名稱', '負責業務', '交貨方式',
                      '產品分類', '品名', '幣別', '單位', '客戶料號',
                      'Term']
     df_strip = df[columns_strip]
-    columns_keep = ['開單日期', '預交日期', '交期變更', '月份', '數量', '單價', '匯率', '本國幣別 CNY', '客戶希交日']
+    columns_keep = ['開單日期', '預交日期', '交期變更', '月份', '數量', '單價', '匯率', '本國幣別 NTD', '客戶希交日']
     df_keep = df[columns_keep]
     df_keep['匯率'] = df_keep['匯率'].replace(1, 4.3)
-    df_keep['本國幣別 CNY'] = df_keep['本國幣別 CNY'].map(lambda x: x * 4.3)
+    df_keep['本國幣別 NTD'] = df_keep['本國幣別 NTD'].map(lambda x: x * 4.3)
     df_strip = df_strip.applymap(lambda x: x.strip())
     df_strip['負責業務'] = df_strip['負責業務'].apply(change_name)
     df = pd.concat([df_strip, df_keep], axis=1)
@@ -159,7 +160,7 @@ def wuxi_component_processing(file_path, file_name, export_path):
     df = df.drop('單位', axis=1)
 
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
-               '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '匯率', '本國幣別 CNY', '客戶料號', '客戶希交日', 'Term']
+               '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '匯率', '本國幣別 NTD', '客戶料號', '客戶希交日', 'Term']
     result = df.reindex(columns=columns)
     # print('請選擇輸出資料夾')
     # export_path = get_file_path()
@@ -252,47 +253,47 @@ def antenna_processing(file_path, file_name, export_path):
 
 
 def preprocessing_data():
-    print('請選擇要處理的檔案！')
+    print('Please select the files from the folder to extract!')
     file_paths = get_file_paths()
     y = display(file_paths)
-    a, b, c, d, e = map(int, input('請填入處理順序:（竹南元件2020，竹南元件2019，無錫元件，無錫ODM，天線）\n').split())
+    a, b, c, d, e = map(int, input('Please input numbers to decide the processing order and press "Enter": (Zhunan component, Wuxi component, ODM component, RF)\n Example: 3 2 1 5 4\n\n').split())
     preprocessing_order = [a, b, c, d, e]
-    print('請選擇要匯出檔案的資料夾')
+    print('Please select the folder to export the files.')
     export_path = get_file_path()
     for file in preprocessing_order:
         if preprocessing_order.index(file) <= 1:
             file_path = y[file]
-            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'
             zhunan_component_processing(file_path, file_name, export_path)
         elif preprocessing_order.index(file) == 2:
             file_path = y[file]
-            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'
             wuxi_component_processing(file_path, file_name, export_path)
         elif preprocessing_order.index(file) == 3:
             file_path = y[file]
-            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'
             wuxi_component_processing(file_path, file_name, export_path)
         else:
             file_path = y[file]
-            file_name = y[file].split('/')[-1].split('.')[0] + '已修改.xlsx'
+            file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'
             antenna_processing(file_path, file_name, export_path)
 
 
 '''將所有檔案的資料合併為一個檔案'''
 def merge_files():
-    print('選擇所有需要整合的檔案')
+    print('Please select the files for combination.')
     files = get_file_paths()
-    files_len = len(files)
-    df = pd.read_excel(files[0])
-    for i in range(1, files_len):
-        i = pd.read_excel(files[i])
-        df = pd.concat([df, i], axis=0, ignore_index=True)
-    #     df = df.append(i, ignore_index=True)
-    df = df.drop(df.columns[-1], axis=1)
-    print('選擇匯出的資料夾')
+    n = 1
+    combine_files = {}
+    for f in files:
+        file_name = 'df' + str(n)
+        combine_files.setdefault(file_name, pd.read_excel(f))
+        n += 1
+    final = pd.concat(combine_files)
+    print('Please select the folder to export')
     folder_name = get_file_path()
-    df.to_excel(folder_name + '/最終版數據.xlsx', index=False)
-    print('輸出完成！')
+    final.to_excel(folder_name + '_final.xlsx', index=False)
+    print('Export has been finished.')
 
 def main():
     # starter()
@@ -301,6 +302,6 @@ def main():
     merge_files()
     end_time = time.process_time()
     total_time = end_time - start_time
-    print('程式執行時間為{}秒。'.format(round(total_time, 2)))
+    print('It takes {} seconds to accomplish the whole process.'.format(round(total_time, 2)))
 
 main()

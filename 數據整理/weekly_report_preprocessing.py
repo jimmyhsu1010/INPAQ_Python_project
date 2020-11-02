@@ -178,6 +178,7 @@ def antenna_processing(file_path, file_name, export_path):
     #     df.columns = columns
     #     df = df.drop(0, axis=0) #去掉最上面沒有用的row
     df.columns = df.columns.str.strip()  # 去掉欄位名稱的空白
+    # df = df.drop(df.columns[-3:], axis=1)
 
     df['開單日期'] = pd.to_datetime(df['開單日期'], yearfirst=True)
     df['預交日期'] = pd.to_datetime(df['預交日期'], yearfirst=True)
@@ -194,9 +195,9 @@ def antenna_processing(file_path, file_name, export_path):
     columns_keep = ['開單日期', '預交日期', '交期變更', '月份', '數量', '單價', '匯率', '本國幣別 NTD', '客戶希交日']
     df_keep = df[columns_keep]
     df_strip = df_strip.applymap(lambda x: x.strip())
-    df_strip = df_strip[~df_strip['負責業務'].str.contains('煌|婷')]
     df_strip['負責業務'] = df_strip['負責業務'].apply(change_name)
     df = pd.concat([df_strip, df_keep], axis=1)
+    df = df[(df['負責業務'].str.contains('許凱智|墨漢雷迪|楊婉芬|沈思明|周彥宏'))].reset_index()
 
     '''單位確認用if'''
     if 'KPCS' in df['單位'].tolist():
@@ -292,7 +293,7 @@ def merge_files():
     final = pd.concat(combine_files)
     print('Please select the folder to export')
     folder_name = get_file_path()
-    final.to_excel(folder_name + '_final.xlsx', index=False)
+    final.to_excel(folder_name + '/匯總數據_final.xlsx', index=False)
     print('Export has been finished.')
 
 def main():

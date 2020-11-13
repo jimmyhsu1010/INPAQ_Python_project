@@ -305,4 +305,5 @@ def main():
     total_time = end_time - start_time
     print('It takes {} seconds to accomplish the whole process.'.format(round(total_time, 2)))
 
-main()
+if __name__ == '__main__':
+    main()

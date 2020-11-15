@@ -24,3 +24,5 @@ out_put = tk.Button(window, text='確定', command=bt) #設置按鈕讀取函數
 out_put.place(x=0, y=0)
 
 window.mainloop()
+print(type(window))
+print(dir(window))

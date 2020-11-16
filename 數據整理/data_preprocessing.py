@@ -1,6 +1,8 @@
 import pandas as pd
 from datetime import datetime
 
+pd.set_option('display.float_format', lambda x: '%.0f' % x)
+
 class WeeklyReport:
     path = input('請輸入檔案路徑：')
     df = pd.read_excel(path, None)
@@ -21,5 +23,7 @@ class WeeklyReport:
 
 
 
-taiwan = WeeklyReport()
-print(taiwan.shipment_total('RF'))
+
+if __name__ == '__main__':
+    taiwan = WeeklyReport()
+    print(taiwan.shipment_total('RF'))

@@ -9,8 +9,10 @@ import pandas as pd
 
 #-----------------------------------------------------------------
 # Import clean data
-sales = pd.read_excel('/Users/kai/Desktop/Weekly report_v0.1.xlsx', sheet_name='出貨明細')
-budget = pd.read_excel('/Users/kai/Desktop/Weekly report_v0.1.xlsx', sheet_name='2020預算', usecols=('A:F'))
+# sales = pd.read_excel('/Users/kai/Desktop/Weekly report_v0.1.xlsx', sheet_name='出貨明細')
+# budget = pd.read_excel('/Users/kai/Desktop/Weekly report_v0.1.xlsx', sheet_name='2020預算', usecols=('A:F'))
+sales = pd.read_excel(r'C:\Users\kaihsu\Desktop\業績總表\Weekly report_v0.1.xlsx', sheet_name='出貨明細')
+budget = pd.read_excel(r'C:\Users\kaihsu\Desktop\業績總表\Weekly report_v0.1.xlsx', sheet_name='2020預算', usecols=('A:F'))
 sales['BG'] = sales.apply(lambda x: 'RFBU2' if 'RFDP' in x['品名'] else x['BG'], axis=1)
 sales_filter = sales[sales['狀態'].str.contains('出')]
 budget['產品'] = budget.apply(lambda x: '天線' if 'RF' in x['客戶名稱'] else '元件', axis=1)
@@ -86,12 +88,12 @@ app.layout = html.Div([
                 page_count=0),
             width = {'size': 4}),
 
-            dbc.Col(dash_table.DataTable(
-                id='summary_table',
-                columns=[
-                    {'id':}
-                ]
-            ))
+            # dbc.Col(dash_table.DataTable(
+            #     id='summary_table',
+            #     columns=[
+            #         {'id':}
+            #     ]
+            # ))
         ]
 
     )

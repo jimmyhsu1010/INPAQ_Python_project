@@ -3,6 +3,7 @@ import dash_html_components as html
 import dash_pivottable
 import pandas as pd
 import dash_auth
+import dash_bootstrap_components as dbc
 
 # Keep this out of source code repository - save in a file or a database
 VALID_USERNAME_PASSWORD_PAIRS = {
@@ -32,8 +33,10 @@ sales['預交月份'] = sales['預交月份'].map(mon_dict)
 data = sales.values.tolist()
 data.insert(0, sales.columns.tolist())
 
-app.layout = html.Div(
-    dash_pivottable.PivotTable(
+app.layout = html.Div([
+    dbc.Row(dbc.Col(html.H3('INPAQ Online BI System'),
+                    width={'size': 6})),
+    dbc.Row(dbc.Col(dash_pivottable.PivotTable(
         # data=[
         #     ['Animal', 'Count', 'Location'],
         #     ['Zebra', 5, 'SF Zoo'],
@@ -50,8 +53,7 @@ app.layout = html.Div(
         vals=['本國幣別NTD'],
         aggregatorName='Sum',
         menuLimit=10000
-    )
-)
+    ), width={'size': 6}))])
 
 if __name__ == "__main__":
     app.run_server(debug=True)

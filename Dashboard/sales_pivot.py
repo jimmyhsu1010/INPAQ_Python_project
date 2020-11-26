@@ -24,12 +24,16 @@ auth = dash_auth.BasicAuth(
 sales = pd.read_excel("Weekly report_v0.1.xlsx", sheet_name='出貨明細') # Heroku用
 sales['BG'] = sales.apply(lambda x: 'RFBU2' if 'RFDP' in x['品名'] else 'RFBU1' if 'RFDP' not in x['品名'] and 'RF' in x['BG'] else x['BG'], axis=1)
 sales = sales[sales['狀態'].str.contains('出')]
-sales = sales[['BG', 'Group', '銷售單號', '開單日期', '預交日期', '預交年份', '預交月份', '負責業務', '品名', '幣別', '單價', '數量', '本國幣別NTD', '客戶料號', 'Term']]
+sales = sales[['BG', 'Subcategory', 'Group', '銷售單號', '開單日期', '預交日期', '預交年份', '預交月份', '負責業務', '產品分類', '品名', '幣別', '單價', '數量', '本國幣別NTD', '客戶料號', 'Term']]
 mon_dict = {'January':1, 'February':2, 'March':3, 'April':4, 'May':5, 'June':6, 'July':7, 'August':8, 'September':9, 'October':10, 'November':11, 'December':12}
 sales['數量'] = sales['數量'].astype('int')
 sales['本國幣別NTD'] = sales['本國幣別NTD'].astype('int')
 sales['預交月份'] = sales['預交月份'].map(mon_dict)
+sales['Subcategory'] = sales['產品分類'].str.upper().str.extract('([A-Z]+)')
+sales = sales[['BG', 'Subcategory', 'Group', '銷售單號', '開單日期', '預交日期', '預交年份', '預交月份',
+               '負責業務', '品名', '幣別', '單價', '數量', '本國幣別NTD', '客戶料號', 'Term']]
 
+# Prepare date for dash-pivottable
 data = sales.values.tolist()
 data.insert(0, sales.columns.tolist())
 

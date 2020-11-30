@@ -42,7 +42,8 @@ data = sales.values.tolist()
 data.insert(0, sales.columns.tolist())
 
 # price_table用來查詢報價歷史記錄
-price_table = pd.read_excel("his_price.xlsx")
+# price_table = pd.read_excel("his_price.xlsx")
+price_table = pd.read_csv('his_price.csv')
 # price_table = sales[['Group', '開單日期', '負責業務', '品名', '客戶料號', '幣別', '單價', '數量']]
 # price_table['單價'] = price_table.apply(lambda x: x['單價'] / 30 if x['幣別'] == 'NTD' else x['單價'] / 6.9 if x['幣別'] == 'CNY'
 #                                      else x['單價'] * 1.19 if x['幣別'] == 'EUR' else x['單價'], axis=1)

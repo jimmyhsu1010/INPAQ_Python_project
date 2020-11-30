@@ -42,11 +42,12 @@ data = sales.values.tolist()
 data.insert(0, sales.columns.tolist())
 
 # price_table用來查詢報價歷史記錄
-price_table = sales[['Group', '開單日期', '負責業務', '品名', '客戶料號', '幣別', '單價', '數量']]
-price_table['單價'] = price_table.apply(lambda x: x['單價'] / 30 if x['幣別'] == 'NTD' else x['單價'] / 6.9 if x['幣別'] == 'CNY'
-                                     else x['單價'] * 1.19 if x['幣別'] == 'EUR' else x['單價'], axis=1)
-price_table['幣別'] = price_table['幣別'].apply(lambda x: 'USD')
-price_table = price_table.drop_duplicates(subset=['Group', '負責業務', '品名'], keep='last')
+price_table = pd.read_excel("his_price.xlsx")
+# price_table = sales[['Group', '開單日期', '負責業務', '品名', '客戶料號', '幣別', '單價', '數量']]
+# price_table['單價'] = price_table.apply(lambda x: x['單價'] / 30 if x['幣別'] == 'NTD' else x['單價'] / 6.9 if x['幣別'] == 'CNY'
+#                                      else x['單價'] * 1.19 if x['幣別'] == 'EUR' else x['單價'], axis=1)
+# price_table['幣別'] = price_table['幣別'].apply(lambda x: 'USD')
+# price_table = price_table.drop_duplicates(subset=['Group', '負責業務', '品名'], keep='last')
 
 # Dashboard layout setting
 app.layout = html.Div([
@@ -73,10 +74,10 @@ app.layout = html.Div([
     dbc.Row([
         dbc.Col(html.Div([
             html.H3('歷史記錄'),
-            dcc.Graph(id='price_table', figure={})]), width={'size': 7}),
+            dcc.Graph(id='price_table', figure={})]), width={'size': 6}),
         dbc.Col(html.Div([
             html.H3('Box plot'),
-            dcc.Graph(id='price_box', figure={})]), width={'size': 5})]),
+            dcc.Graph(id='price_box', figure={})]), width={'size': 6})]),
 
     dbc.Row(dbc.Col(dash_pivottable.PivotTable(
         # data=[
@@ -103,17 +104,19 @@ app.layout = html.Div([
     [dash.dependencies.Input('test', 'value')])
 def update_table(item):
     dff = price_table[price_table['品名'] == item]
-    dff = dff[['Group', '開單日期', '負責業務', '幣別', '單價', '數量']]
+    dff = dff[['客戶名稱', '開單日期', '組別', '訂單業務', '幣別', '單價', '數量']]
+    # font_color = ['black']*5 + [['red' if i <= dff['單價'].min() else 'green' if i == dff['單價'].max() else 'black' for i in dff['單價']]] + ['black']
     fig1 = go.Figure(data=[go.Table(
         header=dict(values=list(dff.columns),
                     fill_color='paleturquoise',
                     align='left'),
-        cells=dict(values=[dff.Group, dff.開單日期, dff.負責業務, dff.幣別, dff.單價, dff.數量],
+        cells=dict(values=[dff.客戶名稱, dff.開單日期, dff.組別, dff.訂單業務, dff.幣別, dff.單價, dff.數量],
                    fill_color='lavender',
                    align='left',
-                   format=[None, None, None, None, ",.4f", None]))
+                   # font_color=font_color,
+                   format=[None, None, None, None, None, ",.4f", None]))
     ])
-    fig2 = px.box(dff, x='負責業務', y='單價')
+    fig2 = px.box(dff, x='組別', y='單價')
     fig2.update_traces(quartilemethod="exclusive")
 
     return fig1, fig2

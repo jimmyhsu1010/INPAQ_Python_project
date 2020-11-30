@@ -171,7 +171,7 @@ def wuxi_component_processing(file_path, file_name, export_path):
 
 # 天線出貨明細表整理
 def antenna_processing(file_path, file_name, export_path):
-    df = pd.read_excel(file_path, header=1)
+    df = pd.read_excel(file_path, header=1, usecols='A:AL')
     #     df.keys()
     #     df = df['axmr4301']
     #     columns = df.iloc[0,:].tolist()
@@ -305,4 +305,5 @@ def main():
     total_time = end_time - start_time
     print('It takes {} seconds to accomplish the whole process.'.format(round(total_time, 2)))
 
-main()
+if __name__ == '__main__':
+    main()

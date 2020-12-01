@@ -25,7 +25,7 @@ auth = dash_auth.BasicAuth(
 )
 
 # sales = pd.read_excel('/Users/kai/Desktop/Weekly report_v0.1.xlsx', sheet_name='出貨明細') # Mac用
-sales = pd.read_excel("Weekly report_v0.1.xlsx", sheet_name='出貨明細') # Heroku用
+sales = pd.read_csv("weekly_report.csv") # Heroku用
 sales['BG'] = sales.apply(lambda x: 'RFBU2' if 'RFDP' in x['品名'] else 'RFBU1' if 'RFDP' not in x['品名'] and 'RF' in x['BG'] else x['BG'], axis=1)
 sales = sales[sales['狀態'].str.contains('出')]
 sales = sales[['BG', 'Subcategory', 'Group', '銷售單號', '開單日期', '預交日期', '預交年份', '預交月份', '負責業務', '產品分類', '品名', '幣別', '單價', '數量', '本國幣別NTD', '客戶料號', 'Term']]
@@ -115,7 +115,7 @@ def update_table(item):
                    fill_color='lavender',
                    align='left',
                    # font_color=font_color,
-                   format=[None, None, None, None, None, ",.4f", None]))
+                   format=[None, None, None, None, None, ",.4f", ",d"]))
     ])
     fig2 = px.box(dff, x='組別', y='單價')
     fig2.update_traces(quartilemethod="exclusive")

@@ -1,0 +1,2 @@
+# Procfile
+web: gunicorn sales_pivot:server

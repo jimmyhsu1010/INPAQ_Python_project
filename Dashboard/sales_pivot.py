@@ -64,7 +64,7 @@ app.layout = html.Div([
                         id='test',
                         options=[
                             {'label': i, 'value': i}
-                            for i in sales['品名'].unique()
+                            for i in price_table['品名'].unique()
                         ],
                         # values='',
                         placeholder='Select or enter a PN'

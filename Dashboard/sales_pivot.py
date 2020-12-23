@@ -25,7 +25,7 @@ auth = dash_auth.BasicAuth(
 )
 
 # sales = pd.read_excel('/Users/kai/Desktop/Weekly report_v0.1.xlsx', sheet_name='出貨明細') # Mac用
-sales = pd.read_excel("Weekly report_v0.1.xlsx", sheet_name='出貨明細') # Heroku用
+sales = pd.read_csv("weekly_report.csv") # Heroku用
 sales['BG'] = sales.apply(lambda x: 'RFBU2' if 'RFDP' in x['品名'] else 'RFBU1' if 'RFDP' not in x['品名'] and 'RF' in x['BG'] else x['BG'], axis=1)
 sales = sales[sales['狀態'].str.contains('出')]
 sales = sales[['BG', 'Subcategory', 'Group', '銷售單號', '開單日期', '預交日期', '預交年份', '預交月份', '負責業務', '產品分類', '品名', '幣別', '單價', '數量', '本國幣別NTD', '客戶料號', 'Term']]
@@ -42,7 +42,8 @@ data = sales.values.tolist()
 data.insert(0, sales.columns.tolist())
 
 # price_table用來查詢報價歷史記錄
-price_table = pd.read_excel("his_price.xlsx")
+# price_table = pd.read_excel("his_price.xlsx")
+price_table = pd.read_csv('his_price.csv')
 # price_table = sales[['Group', '開單日期', '負責業務', '品名', '客戶料號', '幣別', '單價', '數量']]
 # price_table['單價'] = price_table.apply(lambda x: x['單價'] / 30 if x['幣別'] == 'NTD' else x['單價'] / 6.9 if x['幣別'] == 'CNY'
 #                                      else x['單價'] * 1.19 if x['幣別'] == 'EUR' else x['單價'], axis=1)
@@ -63,7 +64,7 @@ app.layout = html.Div([
                         id='test',
                         options=[
                             {'label': i, 'value': i}
-                            for i in sales['品名'].unique()
+                            for i in price_table['品名'].unique()
                         ],
                         # values='',
                         placeholder='Select or enter a PN'
@@ -114,7 +115,7 @@ def update_table(item):
                    fill_color='lavender',
                    align='left',
                    # font_color=font_color,
-                   format=[None, None, None, None, None, ",.4f", None]))
+                   format=[None, None, None, None, None, ",.4f", ",d"]))
     ])
     fig2 = px.box(dff, x='組別', y='單價')
     fig2.update_traces(quartilemethod="exclusive")

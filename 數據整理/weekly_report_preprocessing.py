@@ -3,6 +3,8 @@ import tkinter as tk
 from tkinter import filedialog
 import time
 
+
+
 '''選取單一檔案路徑
     存檔輸出的時候使用'''
 def get_file_path():
@@ -50,7 +52,10 @@ def change_name(data):
 '''三廠處理的function'''
 # 竹南元件出貨明細表整理
 def zhunan_component_processing(file_path, file_name, export_path):
-    df = pd.read_excel(file_path, header=1)
+    code = pd.read_excel("BU_code.xlsx")
+    bu_code = dict(zip(code.Code, code.BG))
+    cus_code = dict(zip(code.Cus, code.Group))
+    df = pd.read_excel(file_path)
     #     df.keys()
     #     df = df['axmr4301']
     #     columns = df.iloc[0,:].tolist()
@@ -58,29 +63,29 @@ def zhunan_component_processing(file_path, file_name, export_path):
     #     df = df.drop(0, axis=0) #去掉最上面沒有用的row
     df.columns = df.columns.str.strip()  # 去掉欄位名稱的空白
 
-    df['開單日期'] = pd.to_datetime(df['開單日期'], yearfirst=True)
-    df['預交日期'] = pd.to_datetime(df['預交日期'], yearfirst=True)
-    df['客戶希交日'] = pd.to_datetime(df['客戶希交日'], yearfirst=True, errors='coerce')
-    df['交期變更'] = pd.to_datetime(df['交期變更'], yearfirst=True, errors='coerce')
+    df['開單日期'] = pd.to_datetime(df['開單日期'], yearfirst=True, unit='D')
+    df['預交日期'] = pd.to_datetime(df['預交日期'], yearfirst=True, unit='D')
+    df['客戶希交日'] = pd.to_datetime(df['客戶希交日'], yearfirst=True, errors='coerce', unit='D')
+    df['交期變更'] = pd.to_datetime(df['交期變更'], yearfirst=True, errors='coerce', unit='D')
     keep_columns = ['狀態', '銷售單號', '月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單位',
-                    '單價', '匯率', '本國幣別 NTD', '客戶料號', '客戶希交日', 'Term']
+                    '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term']
     df = df[keep_columns]  # 需要留下來的欄位建立新表格
 
-    columns_strip = ['狀態', '銷售單號', '客戶名稱', '負責業務', '交貨方式',
-                     '產品分類', '品名', '幣別', '單位', '客戶料號',
-                     'Term']
-    df_strip = df[columns_strip]
-    columns_keep = ['開單日期', '預交日期', '交期變更', '月份', '數量', '單價', '匯率', '本國幣別 NTD', '客戶希交日']
-    df_keep = df[columns_keep]
-    df_strip = df_strip.applymap(lambda x: x.strip())
-    df = pd.concat([df_strip, df_keep], axis=1)
+    # columns_strip = ['狀態', '銷售單號', '客戶名稱', '負責業務', '交貨方式',
+    #                  '產品分類', '品名', '幣別', '單位', '客戶料號',
+    #                  'Term']
+    # df_strip = df[columns_strip]
+#     columns_keep = ['開單日期', '預交日期', '交期變更', '月份', '數量', '單價', '匯率', '本國幣別 NTD', '客戶希交日']
+#     df_keep = df[columns_keep]
+#     df_strip = df_strip.applymap(lambda x: x.strip())
+#     df = pd.concat([df_strip, df_keep], axis=1)
 
     df_unit_change = df[df['單位'] == 'KPCS']
     df_keep_unit = df[~(df['單位'] == 'KPCS')]
 
     df_unit_change['數量'] = df_unit_change['數量'].map(lambda x: x * 1000)
     df_unit_change['單價'] = df_unit_change['單價'].map(lambda x: x / 1000)
-    df_unit_change['單位'] = df_unit_change['單位'].str.replace('KPCS', 'PCS')
+    # df_unit_change['單位'] = df_unit_change['單位'].str.replace('KPCS', 'PCS')
 
     df = pd.concat([df_unit_change, df_keep_unit], axis=0)
 
@@ -91,8 +96,20 @@ def zhunan_component_processing(file_path, file_name, export_path):
     df = df.drop('單位', axis=1)
 
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
-               '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '匯率', '本國幣別 NTD', '客戶料號', '客戶希交日', 'Term']
+           '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term']
     result = df.reindex(columns=columns)
+    # result['Category'] = result['產品分類'].str.strip().str[0:4]
+    # result['BG'] = result['Category'].map(bu_code)
+    # result['Group'] = result.apply(lambda x: cus_code[x['客戶名稱']] if x['客戶名稱'] in cus_code.keys() else x['客戶名稱'], axis=1)
+    result['負責業務'] = result['負責業務'].map(lambda x: '鄭里緗' if x == '沈思明' else '鄭里緗' if x == '鄭裡緗' else x)
+    result = result[result['負責業務'].isin(['鄭里緗', '許凱智', '墨漢雷迪'])]
+    # result['預交年份'] = result['預交日期'].dt.year
+    # result['預交月份'] = result['預交日期'].dt.month_name()
+    result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期',
+       '預交日期', '預交年份', '預交月份', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名',
+       '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term']
+    result['數量'] = result['數量'].astype(int)
+    result['本國幣別NTD'] = result['本國幣別NTD'].astype(int)
     # print('請選擇輸出資料夾')
     # export_path = get_file_path()
     # export_file_name = 'C:\\Users\\kaihsu\\Desktop\\業績總表\\' + file_name # PC使用
@@ -171,7 +188,10 @@ def wuxi_component_processing(file_path, file_name, export_path):
 
 # 天線出貨明細表整理
 def antenna_processing(file_path, file_name, export_path):
-    df = pd.read_excel(file_path, header=1, usecols='A:AL')
+    code = pd.read_excel("BU_code.xlsx")
+    bu_code = dict(zip(code.Code, code.BG))
+    cus_code = dict(zip(code.Cus, code.Group))
+    df = pd.read_excel(file_path, header=1)
     #     df.keys()
     #     df = df['axmr4301']
     #     columns = df.iloc[0,:].tolist()
@@ -180,37 +200,33 @@ def antenna_processing(file_path, file_name, export_path):
     df.columns = df.columns.str.strip()  # 去掉欄位名稱的空白
     # df = df.drop(df.columns[-3:], axis=1)
 
-    df['開單日期'] = pd.to_datetime(df['開單日期'], yearfirst=True)
-    df['預交日期'] = pd.to_datetime(df['預交日期'], yearfirst=True)
-    df['客戶希交日'] = pd.to_datetime(df['客戶希交日'], yearfirst=True, errors='coerce')
-    df['交期變更'] = pd.to_datetime(df['交期變更'], yearfirst=True, errors='coerce')
+    # df['開單日期'] = pd.to_datetime(df['開單日期'], yearfirst=True, unit='D')
+    # df['預交日期'] = pd.to_datetime(df['預交日期'], yearfirst=True, unit='D')
+    # df['客戶希交日'] = pd.to_datetime(df['客戶希交日'], yearfirst=True, errors='coerce', unit='D')
+    # df['交期變更'] = pd.to_datetime(df['交期變更'], yearfirst=True, errors='coerce', unit='D')
     keep_columns = ['狀態', '銷售單號', '月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單位',
-                    '單價', '匯率', '本國幣別 NTD', '客戶料號', '客戶希交日', 'Term']
+                    '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term']
     df = df[keep_columns]  # 需要留下來的欄位建立新表格
 
-    columns_strip = ['狀態', '銷售單號', '客戶名稱', '負責業務', '交貨方式',
-                     '產品分類', '品名', '幣別', '單位', '客戶料號',
-                     'Term']
-    df_strip = df[columns_strip]
-    columns_keep = ['開單日期', '預交日期', '交期變更', '月份', '數量', '單價', '匯率', '本國幣別 NTD', '客戶希交日']
-    df_keep = df[columns_keep]
-    df_strip = df_strip.applymap(lambda x: x.strip())
-    df_strip['負責業務'] = df_strip['負責業務'].apply(change_name)
-    df = pd.concat([df_strip, df_keep], axis=1)
-    df = df[(df['負責業務'].str.contains('許凱智|墨漢雷迪|楊婉芬|沈思明|周彥宏'))].reset_index()
+    # columns_strip = ['狀態', '銷售單號', '客戶名稱', '負責業務', '交貨方式',
+    #                  '產品分類', '品名', '幣別', '單位', '客戶料號',
+    #                  'Term']
+    # df_strip = df[columns_strip]
+    # columns_keep = ['開單日期', '預交日期', '交期變更', '月份', '數量', '單價', '匯率', '本國幣別 NTD', '客戶希交日']
+    # df_keep = df[columns_keep]
+    # df_strip = df_strip.applymap(lambda x: x.strip())
+    # df_strip['負責業務'] = df_strip['負責業務'].apply(change_name)
+    # df = pd.concat([df_strip, df_keep], axis=1)
+    # df = df[(df['負責業務'].str.contains('許凱智|墨漢雷迪|楊婉芬|沈思明|周彥宏'))].reset_index()
 
-    '''單位確認用if'''
-    if 'KPCS' in df['單位'].tolist():
-        df_unit_change = df[df['單位'] == 'KPCS']
-        df_keep_unit = df[~(df['單位'] == 'KPCS')]
+    df_unit_change = df[df['單位'] == 'KPCS']
+    df_keep_unit = df[~(df['單位'] == 'KPCS')]
 
-        df_unit_change['數量'] = df_unit_change['數量'].map(lambda x: x * 1000)
-        df_unit_change['單價'] = df_unit_change['單價'].map(lambda x: x / 1000)
-        df_unit_change['單位'] = df_unit_change['單位'].str.replace('KPCS', 'PCS')
+    df_unit_change['數量'] = df_unit_change['數量'].map(lambda x: x * 1000)
+    df_unit_change['單價'] = df_unit_change['單價'].map(lambda x: x / 1000)
+    # df_unit_change['單位'] = df_unit_change['單位'].str.replace('KPCS', 'PCS')
 
-        df = pd.concat([df_unit_change, df_keep_unit], axis=0)
-    else:
-        pass
+    df = pd.concat([df_unit_change, df_keep_unit], axis=0)
 
     append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 4: '預交年份', 5: '預交月份', }
     for k, v in append_dict.items():
@@ -219,8 +235,21 @@ def antenna_processing(file_path, file_name, export_path):
     df = df.drop('單位', axis=1)
 
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
-               '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '匯率', '本國幣別 NTD', '客戶料號', '客戶希交日', 'Term']
+               '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日',
+               'Term']
     result = df.reindex(columns=columns)
+    # result['Category'] = result['產品分類'].map(lambda x: x[0:4])
+    # result['BG'] = result['Category'].map(bu_code)
+    # result['Group'] = result.apply(lambda x: cus_code[x['客戶名稱']] if x['客戶名稱'] in cus_code.keys() else x['客戶名稱'], axis=1)
+    result['負責業務'] = result['負責業務'].map(lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' else x)
+    result = result[result['負責業務'].isin(['鄭里緗', '許凱智', '墨漢雷迪'])]
+    # result['預交年份'] = result['預交日期'].dt.year
+    # result['預交月份'] = result['預交日期'].dt.month_name()
+    result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期',
+                      '預交日期', '預交年份', '預交月份', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名',
+                      '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term']
+    result['數量'] = result['數量'].astype(int)
+    result['本國幣別NTD'] = result['本國幣別NTD'].astype(int)
     # print('請選擇輸出資料夾')
     # export_path = get_file_path()
     # export_file_name = 'C:\\Users\\kaihsu\\Desktop\\業績總表\\' + file_name
@@ -257,23 +286,15 @@ def preprocessing_data():
     print('Please select the files from the folder to extract!')
     file_paths = get_file_paths()
     y = display(file_paths)
-    a, b, c, d, e = map(int, input('Please input numbers to decide the processing order and press "Enter": (Zhunan component, Wuxi component, ODM component, RF)\n Example: 3 2 1 5 4\n\n').split())
-    preprocessing_order = [a, b, c, d, e]
+    a, b, c = map(int, input('Please input numbers to decide the processing order and press "Enter": (Component, RF)\n Example: 3 2 1\n\n').split())
+    preprocessing_order = [a, b, c]
     print('Please select the folder to export the files.')
     export_path = get_file_path()
     for file in preprocessing_order:
-        if preprocessing_order.index(file) <= 1:
+        if preprocessing_order.index(file) == 0 or preprocessing_order.index(file) == 1:
             file_path = y[file]
             file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'
             zhunan_component_processing(file_path, file_name, export_path)
-        elif preprocessing_order.index(file) == 2:
-            file_path = y[file]
-            file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'
-            wuxi_component_processing(file_path, file_name, export_path)
-        elif preprocessing_order.index(file) == 3:
-            file_path = y[file]
-            file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'
-            wuxi_component_processing(file_path, file_name, export_path)
         else:
             file_path = y[file]
             file_name = y[file].split('/')[-1].split('.')[0] + '_revised.xlsx'

@@ -98,13 +98,13 @@ def zhunan_component_processing(file_path, file_name, export_path):
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
            '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term']
     result = df.reindex(columns=columns)
-    result['Category'] = result['產品分類'].str.strip().str[0:4]
-    result['BG'] = result['Category'].map(bu_code)
-    result['Group'] = result.apply(lambda x: cus_code[x['客戶名稱']] if x['客戶名稱'] in cus_code.keys() else x['客戶名稱'], axis=1)
-    result['負責業務'] = result['負責業務'].map(lambda x: '鄭里緗' if x == '沈思明' else x)
+    # result['Category'] = result['產品分類'].str.strip().str[0:4]
+    # result['BG'] = result['Category'].map(bu_code)
+    # result['Group'] = result.apply(lambda x: cus_code[x['客戶名稱']] if x['客戶名稱'] in cus_code.keys() else x['客戶名稱'], axis=1)
+    result['負責業務'] = result['負責業務'].map(lambda x: '鄭里緗' if x == '沈思明' else '鄭里緗' if x == '鄭裡緗' else x)
     result = result[result['負責業務'].isin(['鄭里緗', '許凱智', '墨漢雷迪'])]
-    result['預交年份'] = result['預交日期'].dt.year
-    result['預交月份'] = result['預交日期'].dt.month_name()
+    # result['預交年份'] = result['預交日期'].dt.year
+    # result['預交月份'] = result['預交日期'].dt.month_name()
     result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期',
        '預交日期', '預交年份', '預交月份', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名',
        '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term']
@@ -238,13 +238,13 @@ def antenna_processing(file_path, file_name, export_path):
                '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日',
                'Term']
     result = df.reindex(columns=columns)
-    result['Category'] = result['產品分類'].map(lambda x: x[0:4])
-    result['BG'] = result['Category'].map(bu_code)
-    result['Group'] = result.apply(lambda x: cus_code[x['客戶名稱']] if x['客戶名稱'] in cus_code.keys() else x['客戶名稱'], axis=1)
+    # result['Category'] = result['產品分類'].map(lambda x: x[0:4])
+    # result['BG'] = result['Category'].map(bu_code)
+    # result['Group'] = result.apply(lambda x: cus_code[x['客戶名稱']] if x['客戶名稱'] in cus_code.keys() else x['客戶名稱'], axis=1)
     result['負責業務'] = result['負責業務'].map(lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' else x)
     result = result[result['負責業務'].isin(['鄭里緗', '許凱智', '墨漢雷迪'])]
-    result['預交年份'] = result['預交日期'].dt.year
-    result['預交月份'] = result['預交日期'].dt.month_name()
+    # result['預交年份'] = result['預交日期'].dt.year
+    # result['預交月份'] = result['預交日期'].dt.month_name()
     result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期',
                       '預交日期', '預交年份', '預交月份', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名',
                       '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term']

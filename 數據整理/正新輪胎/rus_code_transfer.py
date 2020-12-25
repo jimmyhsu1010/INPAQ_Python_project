@@ -43,7 +43,23 @@ def get_compare_file(ref_dict):
         result
     finally:
         result['Serial number'] = result.groupby('GTIN').cumcount() + 1
-        return result
+
+    factories = ['CST', 'CSTC', 'MIT']
+    keys = [1, 2, 3]
+    factory_dict = dict(zip(keys, factories))
+    print(factory_dict)
+    sltd_option = eval(input('請選擇輸入資料廠區:'))
+
+    if sltd_option == 2:
+        a = result[result['Item'].isnull()]
+        b = result[~result['Item'].isnull()]
+        b.insert(3, 'Test', b['Item'].map(lambda x: 'E' + x if 'E' != x[0] else x))
+        b.drop(['Item'], axis=1, inplace=True)
+        b.rename(columns={'Test': 'Item'}, inplace=True)
+        result = pd.concat([b, a], axis=0)
+    else:
+        result
+    return result
 
 
 def export_file(result):

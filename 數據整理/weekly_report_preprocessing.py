@@ -68,7 +68,7 @@ def zhunan_component_processing(file_path, file_name, export_path):
     df['客戶希交日'] = pd.to_datetime(df['客戶希交日'], yearfirst=True, errors='coerce', unit='D')
     df['交期變更'] = pd.to_datetime(df['交期變更'], yearfirst=True, errors='coerce', unit='D')
     keep_columns = ['狀態', '銷售單號', '月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單位',
-                    '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term']
+                    '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term', '出通單號']
     df = df[keep_columns]  # 需要留下來的欄位建立新表格
 
     # columns_strip = ['狀態', '銷售單號', '客戶名稱', '負責業務', '交貨方式',
@@ -96,7 +96,7 @@ def zhunan_component_processing(file_path, file_name, export_path):
     df = df.drop('單位', axis=1)
 
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
-           '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term']
+           '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term', '出通單號']
     result = df.reindex(columns=columns)
     # result['Category'] = result['產品分類'].str.strip().str[0:4]
     # result['BG'] = result['Category'].map(bu_code)
@@ -107,7 +107,7 @@ def zhunan_component_processing(file_path, file_name, export_path):
     # result['預交月份'] = result['預交日期'].dt.month_name()
     result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期',
        '預交日期', '預交年份', '預交月份', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名',
-       '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term']
+       '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term', '出通單號']
     result['數量'] = result['數量'].astype(int)
     result['本國幣別NTD'] = result['本國幣別NTD'].astype(int)
     # print('請選擇輸出資料夾')
@@ -205,7 +205,7 @@ def antenna_processing(file_path, file_name, export_path):
     # df['客戶希交日'] = pd.to_datetime(df['客戶希交日'], yearfirst=True, errors='coerce', unit='D')
     # df['交期變更'] = pd.to_datetime(df['交期變更'], yearfirst=True, errors='coerce', unit='D')
     keep_columns = ['狀態', '銷售單號', '月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單位',
-                    '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term']
+                    '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日', 'Term', '出通單號']
     df = df[keep_columns]  # 需要留下來的欄位建立新表格
 
     # columns_strip = ['狀態', '銷售單號', '客戶名稱', '負責業務', '交貨方式',
@@ -236,7 +236,7 @@ def antenna_processing(file_path, file_name, export_path):
 
     columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期', '預交日期', '預交年份', '預交月份', '交期變更',
                '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '單價', '集團匯率(NTD)', '金額*集團匯率(NTD)', '客戶料號', '客戶希交日',
-               'Term']
+               'Term', '出通單號']
     result = df.reindex(columns=columns)
     # result['Category'] = result['產品分類'].map(lambda x: x[0:4])
     # result['BG'] = result['Category'].map(bu_code)
@@ -247,7 +247,7 @@ def antenna_processing(file_path, file_name, export_path):
     # result['預交月份'] = result['預交日期'].dt.month_name()
     result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '月份', '開單日期',
                       '預交日期', '預交年份', '預交月份', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名',
-                      '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term']
+                      '幣別', '數量', '單價', '匯率', '本國幣別NTD', '客戶料號', '客戶希交日', 'Term', '出通單號']
     result['數量'] = result['數量'].astype(int)
     result['本國幣別NTD'] = result['本國幣別NTD'].astype(int)
     # print('請選擇輸出資料夾')

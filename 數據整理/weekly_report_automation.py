@@ -127,6 +127,7 @@ def wuxi_etl():
     while True:
         path = ask_filename()
         df = pd.read_excel(path)
+        df = df[:-2]
         keep_columns = ['状态', '销售单号', '销售项次', '销售月份', '开单日期', '预交日期', '交期变更', '送货客户名称', '负责业务', '交货方式', '产品分类', '品名',
                         '币别', '数量', '已出数量', '未出数', '销售单位',
                         '单价', '集团汇率', '集团汇率*金额', '客户料号', '客户希交日', 'TERM', '出通单号', '客户订单', '客户订单项次']
@@ -160,9 +161,9 @@ def wuxi_etl():
                    'TERM', '出通單號']
         result = df.reindex(columns=columns)
 
-        df['數量'] = df['數量'].astype(int)
-        df['已出數量'] = df['已出數量'].astype(int)
-        df['未出數'] = df['未出數'].astype(int)
+        # df['數量'] = df['數量'].astype(int)
+        # df['已出數量'] = df['已出數量'].astype(int)
+        # df['未出數'] = df['未出數'].astype(int)
         df['負責業務'] = df['負責業務'].map(lambda x: '鄭里緗' if x == '沈思明' or x == '鄭裡緗' else x)
         df = df[df["負責業務"] == "鄭里緗"]
         df.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_小顧_clean.xlsx', index=False)

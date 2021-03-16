@@ -17,8 +17,6 @@ class WeeklyReport:
         self.df = self.df[input('Please enter the sheet name that you want to open:\n')]
 
     def shipment_total(self, bu, year=current_year):
-        self.year = year
-        self.bu = bu
         return self.df[(self.df['預交年份'] == year) & (self.df['BG'] == bu)][['數量', '本國幣別NTD']].sum()
 
 

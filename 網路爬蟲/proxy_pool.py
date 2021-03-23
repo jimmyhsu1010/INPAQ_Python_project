@@ -36,13 +36,13 @@ def extract(proxies):
 def random_proxy(working_proxy):
     while True:
         try:
-            proxy = working_proxy[random.randint(0, len(working_proxy) - 1)]
+            proxy = random.choice(working_list)
             r = requests.get('https://httpbin.org/ip', proxies={'http': proxy, 'https': proxy}, timeout=1)
             #             print(r.json())
             return proxy
             break
-        except ConnectTimeout:
-            pass
+        except ConnectTimeout as c:
+            print(c)
         except:
             pass
 

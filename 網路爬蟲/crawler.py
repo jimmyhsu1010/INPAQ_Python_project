@@ -44,7 +44,8 @@ while page <= 4482:
             "upgrade-insecure-requests": "1", "referer": "www.malico.com.tw",
             'accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.9',
             'accept-encoding': 'gzip, deflate, br',
-            'accept-language': 'zh-TW,zh;q=0.9,ru;q=0.8,en-US;q=0.7,en;q=0.6,ja;q=0.5'}
+            'accept-language': 'zh-TW,zh;q=0.9,ru;q=0.8,en-US;q=0.7,en;q=0.6,ja;q=0.5',
+        'host': 'www.mouser.tw'}
         proxy = random.choice(working_list)
         response = requests.get(url, headers=headers, proxies={'http': proxy, 'https': proxy}).content
         selector = etree.HTML(response)

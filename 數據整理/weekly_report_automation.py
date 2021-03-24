@@ -112,6 +112,7 @@ def zhunan_etl():
                    '客戶希交日',
                    'TERM', '出通單號']
         result = zhunan.reindex(columns=columns)
+        result["負責業務"] = result["負責業務"].map(lambda x: "許凱智" if x == "许凯智" else x)
         result = result[result["負責業務"].isin(['鄭里緗', '許凱智', '墨漢雷迪'])]
         result['數量'] = result['數量'].astype(int)
         result['已出數量'] = result['已出數量'].astype(int)

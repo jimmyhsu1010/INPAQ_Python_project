@@ -67,7 +67,7 @@ def rf_etl():
                    '客戶希交日',
                    'TERM', '出通單號']
         result = rf.reindex(columns=columns)
-        result['負責業務'] = result['負責業務'].map(lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' or x == '杨婉芬' else x)
+        result['負責業務'] = result['負責業務'].map(lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' or x == '杨婉芬' else '墨漢雷迪' if x == '墨汉雷迪' else x)
         result = result[result['負責業務'].isin(['鄭里緗', '墨漢雷迪', '許凱智'])]
         result['數量'] = result['數量'].astype(int)
         result['已出數量'] = result['已出數量'].astype(int)

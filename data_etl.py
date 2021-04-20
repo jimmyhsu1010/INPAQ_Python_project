@@ -1,14 +1,3 @@
-# import requests
-# url = "https://udn.com/news/index"
-# response = requests.get(url)
-# content = requests.get(url).content
-# text = requests.get(url).text
-#
-# from bs4 import BeautifulSoup as bs
-#
-# soup = bs(response.text, "html.parser")
-# x = soup.findAll()
-# print(x)
 
 import tkinter as tk
 from tkinter import filedialog
@@ -63,8 +52,8 @@ def clean_data(f_path):
     df2 = df2.rename(columns={'請購品名規格': '摘要', '請購單號': '請購單', '採購本幣小計': '金額'})
     df1['摘要'] = df1['摘要'].str.strip()
     df2['摘要'] = df2['摘要'].str.strip()
-    final_result = pd.merge(df1, df2, on=['摘要', '金額'], how='inner')
-    final_result = final_result.drop_duplicates(keep="first")
+    final_result = pd.merge(df1, df2, on=['摘要', '金額'], how='left')
+    # final_result = final_result.drop_duplicates(keep="first")
     print(final_result)
     return final_result
 

@@ -3,6 +3,9 @@ import pandas as pd
 import tkinter as tk
 from tkinter import filedialog
 
+pd.set_option('mode.chained_assignment', None)
+
+
 def menu():
     os.system("cls")
     print("週報數據前處理系統")
@@ -14,16 +17,20 @@ def menu():
     print("0. 結束程式")
     print("---------------------------")
 
+
 '''
 路徑相關GUI function寫作
 1. ask_filename用來取得單一路徑
 2. ask_filenames用來取得多數路徑
 '''
+
+
 def ask_filename():
     root = tk.Tk()
     root.withdraw()
     file_path = filedialog.askopenfilename()
     return file_path
+
 
 def ask_filenames():
     root = tk.Tk()
@@ -31,24 +38,28 @@ def ask_filenames():
     file_paths = filedialog.askopenfilenames()
     return file_paths
 
+
 '''
 各廠數據處理function和合併function
 '''
 
+
 def rf_etl():
     while True:
         path = ask_filename()
+
         rf = pd.read_excel(path, sheet_name="RF")
-        keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
-                        '數量', '已出數量', '未出數', '銷售單位',
-                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次']
+        rf.columns = rf.columns.str.strip()
+        keep_columns = ['狀態', '銷售單號', '項次', '月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
+                        '數量', '已出數量', '未出數', '單位',
+                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'Term', '出通單號', '客戶單號', '客戶訂單項次']
         rf = rf[keep_columns]
         origin_data_num = rf.shape[0]
-        rf = rf.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
+        rf = rf.drop_duplicates(['銷售單號', '項次', '客戶單號', '客戶訂單項次'], keep='last')
         droped_data_num = rf.shape[0]
         print("總共有", origin_data_num - droped_data_num, "筆重複數據")
-        rf_unit_change = rf[rf['銷售單位'] == 'KPCS']
-        rf_keep_unit = rf[~(rf['銷售單位'] == 'KPCS')]
+        rf_unit_change = rf[rf['單位'] == 'KPCS']
+        rf_keep_unit = rf[~(rf['單位'] == 'KPCS')]
         rf_unit_change['數量'] = rf_unit_change['數量'].map(lambda x: x * 1000)
         rf_unit_change['已出數量'] = rf_unit_change['已出數量'].map(lambda x: x * 1000)
         rf_unit_change['未出數'] = rf_unit_change['未出數'].map(lambda x: x * 1000)
@@ -60,14 +71,22 @@ def rf_etl():
         for k, v in append_dict.items():
             rf.insert(k, v, value=None)
 
-        rf = rf.drop(['銷售單位', '客戶訂單', '客戶訂單項次'], axis=1)
-        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '預交年份', '預交月份',
+        rf = rf.drop(['單位', '客戶單號', '客戶訂單項次'], axis=1)
+        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '項次', '月份', '開單日期', '預交日期', '預交年份', '預交月份',
                    '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',
-                   'TERM', '出通單號']
+                   'Term', '出通單號']
         result = rf.reindex(columns=columns)
-        result['負責業務'] = result['負責業務'].map(lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' or x == '杨婉芬' else '墨漢雷迪' if x == '墨汉雷迪' else x)
+        result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期',
+                          '預交年份', '預交月份',
+                          '交期變更',
+                          '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額',
+                          '客戶料號',
+                          '客戶希交日',
+                          'TERM', '出通單號']
+        result['負責業務'] = result['負責業務'].map(
+            lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' or x == '杨婉芬' else '墨漢雷迪' if x == '墨汉雷迪' else x)
         result = result[result['負責業務'].isin(['鄭里緗', '墨漢雷迪', '許凱智'])]
         result['數量'] = result['數量'].astype(int)
         result['已出數量'] = result['已出數量'].astype(int)
@@ -75,8 +94,48 @@ def rf_etl():
         result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_rf_clean.xlsx', index=False)
         result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_rf_clean.xlsx", index=False)
-        input("處理完畢，請按任意鍵回到主選單") # input不需要有變數來接，因為不管按什麼只是為了下面可以break
+
+        # 用Charlie的數據再使用下面程式碼
+        # rf = pd.read_excel(path, sheet_name="RF")
+        # keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
+        #                 '數量', '已出數量', '未出數', '銷售單位',
+        #                 '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次']
+        # rf = rf[keep_columns]
+        # origin_data_num = rf.shape[0]
+        # rf = rf.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
+        # droped_data_num = rf.shape[0]
+        # print("總共有", origin_data_num - droped_data_num, "筆重複數據")
+        # rf_unit_change = rf[rf['銷售單位'] == 'KPCS']
+        # rf_keep_unit = rf[~(rf['銷售單位'] == 'KPCS')]
+        # rf_unit_change['數量'] = rf_unit_change['數量'].map(lambda x: x * 1000)
+        # rf_unit_change['已出數量'] = rf_unit_change['已出數量'].map(lambda x: x * 1000)
+        # rf_unit_change['未出數'] = rf_unit_change['未出數'].map(lambda x: x * 1000)
+        # rf_unit_change['單價'] = rf_unit_change['單價'].map(lambda x: x / 1000)
+        #
+        # rf = pd.concat([rf_unit_change, rf_keep_unit], axis=0)
+        #
+        # append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 10: '預交年份', 11: '預交月份', }
+        # for k, v in append_dict.items():
+        #     rf.insert(k, v, value=None)
+        #
+        # rf = rf.drop(['銷售單位', '客戶訂單', '客戶訂單項次'], axis=1)
+        # columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '預交年份', '預交月份',
+        #            '交期變更',
+        #            '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
+        #            '客戶希交日',
+        #            'TERM', '出通單號']
+        # result = rf.reindex(columns=columns)
+        # result['負責業務'] = result['負責業務'].map(lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' or x == '杨婉芬' else '墨漢雷迪' if x == '墨汉雷迪' else x)
+        # result = result[result['負責業務'].isin(['鄭里緗', '墨漢雷迪', '許凱智'])]
+        # result['數量'] = result['數量'].astype(int)
+        # result['已出數量'] = result['已出數量'].astype(int)
+        # result['未出數'] = result['未出數'].astype(int)
+        # result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
+        # result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_rf_clean.xlsx', index=False)
+        # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_rf_clean.xlsx", index=False)
+        input("處理完畢，請按任意鍵回到主選單")  # input不需要有變數來接，因為不管按什麼只是為了下面可以break
         break
+
 
 def zhunan_etl():
     while True:
@@ -106,7 +165,8 @@ def zhunan_etl():
             zhunan.insert(k, v, value=None)
 
         zhunan = zhunan.drop(['銷售單位', '客戶訂單', '客戶訂單項次'], axis=1)
-        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '預交年份', '預交月份',
+        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '預交年份',
+                   '預交月份',
                    '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',
@@ -123,6 +183,7 @@ def zhunan_etl():
         result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_component_clean.xlsx", index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
+
 
 def wuxi_etl():
     while True:
@@ -172,6 +233,7 @@ def wuxi_etl():
         input("處理完畢，請按任意鍵回到主選單")
         break
 
+
 def combine_files():
     while True:
         paths = ask_filenames()
@@ -183,6 +245,7 @@ def combine_files():
         result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\匯總數據_final.xlsx", index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
+
 
 '''
 下面是主程式
@@ -201,7 +264,3 @@ while True:
     else:
         print("程式結束")
         break
-
-
-
-

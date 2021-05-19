@@ -7,7 +7,8 @@ pd.set_option('mode.chained_assignment', None)
 
 
 def menu():
-    os.system("cls")
+    # os.system("cls")
+    os.system('clear')
     print("週報數據前處理系統")
     print("---------------------------")
     print("1. 天線數據前處理")
@@ -45,21 +46,28 @@ def ask_filenames():
 
 
 def rf_etl():
+    bu_list = {'ACA-1903-P1-GF-S': 'BU2',
+               'ACA-8010-P1-MC-S': 'BU2',
+               'ACE-3505-P1-PF-S': 'BU2',
+               'ACA-3216-P1-MC-S': 'BU2',
+               'ACA-5220-P1-MC-S': 'BU2',
+               'ACA-3216-P2-MC-S': 'BU2',
+               'ACA-2003-P1-GF-S': 'BU2'}
     while True:
         path = ask_filename()
 
         rf = pd.read_excel(path, sheet_name="RF")
         rf.columns = rf.columns.str.strip()
-        keep_columns = ['狀態', '銷售單號', '項次', '月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
-                        '數量', '已出數量', '未出數', '單位',
-                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'Term', '出通單號', '客戶單號', '客戶訂單項次']
+        keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
+                        '數量', '已出數量', '未出數', '銷售單位',
+                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次']
         rf = rf[keep_columns]
         origin_data_num = rf.shape[0]
-        rf = rf.drop_duplicates(['銷售單號', '項次', '客戶單號', '客戶訂單項次'], keep='last')
+        rf = rf.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
         droped_data_num = rf.shape[0]
         print("總共有", origin_data_num - droped_data_num, "筆重複數據")
-        rf_unit_change = rf[rf['單位'] == 'KPCS']
-        rf_keep_unit = rf[~(rf['單位'] == 'KPCS')]
+        rf_unit_change = rf[rf['銷售單位'] == 'KPCS']
+        rf_keep_unit = rf[~(rf['銷售單位'] == 'KPCS')]
         rf_unit_change['數量'] = rf_unit_change['數量'].map(lambda x: x * 1000)
         rf_unit_change['已出數量'] = rf_unit_change['已出數量'].map(lambda x: x * 1000)
         rf_unit_change['未出數'] = rf_unit_change['未出數'].map(lambda x: x * 1000)
@@ -71,8 +79,8 @@ def rf_etl():
         for k, v in append_dict.items():
             rf.insert(k, v, value=None)
 
-        rf = rf.drop(['單位', '客戶單號', '客戶訂單項次'], axis=1)
-        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '項次', '月份', '開單日期', '預交日期', '預交年份', '預交月份',
+        rf = rf.drop(['銷售單位', '客戶訂單', '客戶訂單項次'], axis=1)
+        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '月份', '開單日期', '預交日期', '預交年份', '預交月份',
                    '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',
@@ -92,8 +100,10 @@ def rf_etl():
         result['已出數量'] = result['已出數量'].astype(int)
         result['未出數'] = result['未出數'].astype(int)
         result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
+        result['Subcategory'] = result.apply(lambda x: 'BU2' if x['品名'] in bu_list.keys() or x['品名'].str.startswith('RFDPA') else 'BU1' if x['BG'] == 'RF' else '', axis=1)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_rf_clean.xlsx', index=False)
         result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_rf_clean.xlsx", index=False)
+        result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_rf_clean.xlsx', index=False)
 
         # 用Charlie的數據再使用下面程式碼
         # rf = pd.read_excel(path, sheet_name="RF")
@@ -181,6 +191,7 @@ def zhunan_etl():
         # result['集團匯率*金額'] = result['集團匯率*金額'].astype(int)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_component_clean.xlsx', index=False)
         result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_component_clean.xlsx", index=False)
+        result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_component_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
 
@@ -230,6 +241,7 @@ def wuxi_etl():
         df = df[df["負責業務"] == "鄭里緗"]
         df.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_小顧_clean.xlsx', index=False)
         df.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_小顧_clean.xlsx", index=False)
+        df.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_小顧_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
 
@@ -243,6 +255,7 @@ def combine_files():
         result = pd.concat(files_list, axis=0)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\匯總數據_final.xlsx', index=False)
         result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\匯總數據_final.xlsx", index=False)
+        result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/匯總數據_final.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
 

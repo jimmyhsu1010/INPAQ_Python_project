@@ -56,11 +56,11 @@ def rf_etl():
     while True:
         path = ask_filename()
 
-        rf = pd.read_excel(path, sheet_name="RF")
+        rf = pd.read_excel(path)
         rf.columns = rf.columns.str.strip()
         keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
                         '數量', '已出數量', '未出數', '銷售單位',
-                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次']
+                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU']
         rf = rf[keep_columns]
         origin_data_num = rf.shape[0]
         rf = rf.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
@@ -84,7 +84,7 @@ def rf_etl():
                    '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',
-                   'Term', '出通單號']
+                   'Term', '出通單號', 'BU']
         result = rf.reindex(columns=columns)
         result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期',
                           '預交年份', '預交月份',
@@ -92,7 +92,7 @@ def rf_etl():
                           '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額',
                           '客戶料號',
                           '客戶希交日',
-                          'TERM', '出通單號']
+                          'TERM', '出通單號', 'BU']
         result['負責業務'] = result['負責業務'].map(
             lambda x: '許凱智' if x == '楊婉芬' or x == '周彥宏' or x == '杨婉芬' else '墨漢雷迪' if x == '墨汉雷迪' else x)
         result = result[result['負責業務'].isin(['鄭里緗', '墨漢雷迪', '許凱智'])]
@@ -100,9 +100,8 @@ def rf_etl():
         result['已出數量'] = result['已出數量'].astype(int)
         result['未出數'] = result['未出數'].astype(int)
         result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
-        result['Subcategory'] = result.apply(lambda x: 'BU2' if x['品名'] in bu_list.keys() or x['品名'].str.startswith('RFDPA') else 'BU1' if x['BG'] == 'RF' else '', axis=1)
-        result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_rf_clean.xlsx', index=False)
-        result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_rf_clean.xlsx", index=False)
+        # result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_rf_clean.xlsx', index=False)
+        # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_rf_clean.xlsx", index=False)
         result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_rf_clean.xlsx', index=False)
 
         # 用Charlie的數據再使用下面程式碼
@@ -154,7 +153,7 @@ def zhunan_etl():
         zhunan = zhunan[:-2]
         keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式',
                         '產品分類', '品名', '幣別', '數量', '銷售單位', '已出數量', '未出數',
-                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次']
+                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU']
         zhunan = zhunan[keep_columns]
         origin_data = zhunan.shape[0]
         zhunan = zhunan[zhunan['客戶名稱'] != 'INPAQ']
@@ -180,7 +179,7 @@ def zhunan_etl():
                    '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',
-                   'TERM', '出通單號']
+                   'TERM', '出通單號', 'BU']
         result = zhunan.reindex(columns=columns)
         result["負責業務"] = result["負責業務"].map(lambda x: "許凱智" if x == "许凯智" else x)
         result = result[result["負責業務"].isin(['鄭里緗', '許凱智', '墨漢雷迪'])]
@@ -189,8 +188,8 @@ def zhunan_etl():
         result['未出數'] = result['未出數'].astype(int)
         result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
         # result['集團匯率*金額'] = result['集團匯率*金額'].astype(int)
-        result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_component_clean.xlsx', index=False)
-        result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_component_clean.xlsx", index=False)
+        # result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_component_clean.xlsx', index=False)
+        # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_component_clean.xlsx", index=False)
         result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_component_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
@@ -203,11 +202,11 @@ def wuxi_etl():
         df = df[:-2]
         keep_columns = ['状态', '销售单号', '销售项次', '销售月份', '开单日期', '预交日期', '交期变更', '送货客户名称', '负责业务', '交货方式', '产品分类', '品名',
                         '币别', '数量', '已出数量', '未出数', '销售单位',
-                        '单价', '集团汇率', '集团汇率*金额', '客户料号', '客户希交日', 'TERM', '出通单号', '客户订单', '客户订单项次']
+                        '单价', '集团汇率', '集团汇率*金额', '客户料号', '客户希交日', 'TERM', '出通单号', '客户订单', '客户订单项次', 'BU']
         df = df[keep_columns]
         df.columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
                       '數量', '已出數量', '未出數', '銷售單位',
-                      '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次']
+                      '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU']
         origin_data = df.shape[0]
         df = df.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
         dropped_data = df.shape[0]
@@ -231,7 +230,7 @@ def wuxi_etl():
                    '預交月份', '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',
-                   'TERM', '出通單號']
+                   'TERM', '出通單號', 'BU']
         result = df.reindex(columns=columns)
 
         # df['數量'] = df['數量'].astype(int)
@@ -239,8 +238,8 @@ def wuxi_etl():
         # df['未出數'] = df['未出數'].astype(int)
         df['負責業務'] = df['負責業務'].map(lambda x: '鄭里緗' if x == '沈思明' or x == '鄭裡緗' else x)
         df = df[df["負責業務"] == "鄭里緗"]
-        df.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_小顧_clean.xlsx', index=False)
-        df.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_小顧_clean.xlsx", index=False)
+        # df.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_小顧_clean.xlsx', index=False)
+        # df.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_小顧_clean.xlsx", index=False)
         df.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_小顧_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break

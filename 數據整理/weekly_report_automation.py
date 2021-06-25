@@ -60,12 +60,13 @@ def rf_etl():
         rf.columns = rf.columns.str.strip()
         keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
                         '數量', '已出數量', '未出數', '銷售單位',
-                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU']
+                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU', 'INVOICE號碼']
         rf = rf[keep_columns]
         origin_data_num = rf.shape[0]
-        rf = rf.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
+        rf = rf.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次', 'INVOICE號碼'], keep='last')
         droped_data_num = rf.shape[0]
         print("總共有", origin_data_num - droped_data_num, "筆重複數據")
+        rf = rf.iloc[:, :-1]
         rf_unit_change = rf[rf['銷售單位'] == 'KPCS']
         rf_keep_unit = rf[~(rf['銷售單位'] == 'KPCS')]
         rf_unit_change['數量'] = rf_unit_change['數量'].map(lambda x: x * 1000)
@@ -153,13 +154,14 @@ def zhunan_etl():
         zhunan = zhunan[:-2]
         keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式',
                         '產品分類', '品名', '幣別', '數量', '銷售單位', '已出數量', '未出數',
-                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU']
+                        '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU', 'INVOICE號碼']
         zhunan = zhunan[keep_columns]
         origin_data = zhunan.shape[0]
         zhunan = zhunan[zhunan['客戶名稱'] != 'INPAQ']
-        zhunan = zhunan.drop_duplicates(subset=['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
+        zhunan = zhunan.drop_duplicates(subset=['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次', 'INVOICE號碼'], keep='last')
         dropped_data = zhunan.shape[0]
         print("總共有", origin_data - dropped_data, "筆重複數據。")
+        zhunan = zhunan.iloc[:, :-1]
         zhunan_unit_change = zhunan[zhunan['銷售單位'] == 'KPCS']
         zhunan_keep_unit = zhunan[~(zhunan['銷售單位'] == 'KPCS')]
         zhunan_unit_change['數量'] = zhunan_unit_change['數量'].map(lambda x: x * 1000)
@@ -202,15 +204,16 @@ def wuxi_etl():
         df = df[:-2]
         keep_columns = ['状态', '销售单号', '销售项次', '销售月份', '开单日期', '预交日期', '交期变更', '送货客户名称', '负责业务', '交货方式', '产品分类', '品名',
                         '币别', '数量', '已出数量', '未出数', '销售单位',
-                        '单价', '集团汇率', '集团汇率*金额', '客户料号', '客户希交日', 'TERM', '出通单号', '客户订单', '客户订单项次', 'BU']
+                        '单价', '集团汇率', '集团汇率*金额', '客户料号', '客户希交日', 'TERM', '出通单号', '客户订单', '客户订单项次', 'BU', 'INVOICE号码']
         df = df[keep_columns]
         df.columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
                       '數量', '已出數量', '未出數', '銷售單位',
-                      '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU']
+                      '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU', 'INVOICE號碼']
         origin_data = df.shape[0]
-        df = df.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次'], keep='last')
+        df = df.drop_duplicates(['銷售單號', '銷售項次', '客戶訂單', '客戶訂單項次', 'INVOICE號碼'], keep='last')
         dropped_data = df.shape[0]
         print("總共有", origin_data - dropped_data, "筆重複數據")
+        df = df.iloc[:, :-1]
         df_unit_change = df[df['銷售單位'] == 'KPCS']
         df_keep_unit = df[~(df['銷售單位'] == 'KPCS')]
         df_unit_change['數量'] = df_unit_change['數量'].map(lambda x: x * 1000)
@@ -264,7 +267,7 @@ def combine_files():
 '''
 while True:
     menu()
-    choice = int(input('請輸入您的選擇:'))
+    choice = int(input('請輸入您的選擇:\n'))
     if choice == 1:
         rf_etl()
     elif choice == 2:

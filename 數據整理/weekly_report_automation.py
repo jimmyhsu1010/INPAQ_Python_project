@@ -58,7 +58,7 @@ def rf_etl():
 
         rf = pd.read_excel(path)
         rf.columns = rf.columns.str.strip()
-        keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
+        keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '排定交貨日', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
                         '數量', '已出數量', '未出數', '銷售單位',
                         '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU', 'INVOICE號碼']
         rf = rf[keep_columns]
@@ -76,18 +76,18 @@ def rf_etl():
 
         rf = pd.concat([rf_unit_change, rf_keep_unit], axis=0)
 
-        append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 10: '預交年份', 11: '預交月份', }
+        append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 11: '預交年份', 12: '預交月份', }
         for k, v in append_dict.items():
             rf.insert(k, v, value=None)
 
         rf = rf.drop(['銷售單位', '客戶訂單', '客戶訂單項次'], axis=1)
-        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '月份', '開單日期', '預交日期', '預交年份', '預交月份',
+        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '月份', '開單日期', '排定交貨日', '預交日期', '預交年份', '預交月份',
                    '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',
                    'Term', '出通單號', 'BU']
         result = rf.reindex(columns=columns)
-        result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期',
+        result.columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '排定交貨日', '預交日期',
                           '預交年份', '預交月份',
                           '交期變更',
                           '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額',
@@ -152,7 +152,7 @@ def zhunan_etl():
         path = ask_filename()
         zhunan = pd.read_excel(path, header=3)
         zhunan = zhunan[:-2]
-        keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式',
+        keep_columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '排定交貨日', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式',
                         '產品分類', '品名', '幣別', '數量', '銷售單位', '已出數量', '未出數',
                         '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU', 'INVOICE號碼']
         zhunan = zhunan[keep_columns]
@@ -171,12 +171,12 @@ def zhunan_etl():
 
         zhunan = pd.concat([zhunan_unit_change, zhunan_keep_unit], axis=0)
 
-        append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 10: '預交年份', 11: '預交月份', }
+        append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 11: '預交年份', 12: '預交月份', }
         for k, v in append_dict.items():
             zhunan.insert(k, v, value=None)
 
         zhunan = zhunan.drop(['銷售單位', '客戶訂單', '客戶訂單項次'], axis=1)
-        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '預交年份',
+        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '排定交貨日', '預交日期', '預交年份',
                    '預交月份',
                    '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
@@ -202,11 +202,11 @@ def wuxi_etl():
         path = ask_filename()
         df = pd.read_excel(path)
         df = df[:-2]
-        keep_columns = ['状态', '销售单号', '销售项次', '销售月份', '开单日期', '预交日期', '交期变更', '送货客户名称', '负责业务', '交货方式', '产品分类', '品名',
+        keep_columns = ['状态', '销售单号', '销售项次', '销售月份', '开单日期', '排定交货日', '预交日期', '交期变更', '送货客户名称', '负责业务', '交货方式', '产品分类', '品名',
                         '币别', '数量', '已出数量', '未出数', '销售单位',
                         '单价', '集团汇率', '集团汇率*金额', '客户料号', '客户希交日', 'TERM', '出通单号', '客户订单', '客户订单项次', 'BU', 'INVOICE号码']
         df = df[keep_columns]
-        df.columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
+        df.columns = ['狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '排定交貨日', '預交日期', '交期變更', '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別',
                       '數量', '已出數量', '未出數', '銷售單位',
                       '單價', '集團匯率', '集團匯率*金額', '客戶料號', '客戶希交日', 'TERM', '出通單號', '客戶訂單', '客戶訂單項次', 'BU', 'INVOICE號碼']
         origin_data = df.shape[0]
@@ -223,13 +223,13 @@ def wuxi_etl():
 
         df = pd.concat([df_unit_change, df_keep_unit], axis=0)
 
-        append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 10: '預交年份', 11: '預交月份', }
+        append_dict = {0: 'Category', 1: 'BG', 2: 'Subcategory', 3: 'Group', 11: '預交年份', 12: '預交月份', }
         for k, v in append_dict.items():
             df.insert(k, v, value=None)
 
         df = df.drop(['銷售單位', '客戶訂單', '客戶訂單項次'], axis=1)
 
-        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '預交日期', '預交年份',
+        columns = ['Category', 'BG', 'Subcategory', 'Group', '狀態', '銷售單號', '銷售項次', '銷售月份', '開單日期', '排定交貨日', '預交日期', '預交年份',
                    '預交月份', '交期變更',
                    '客戶名稱', '負責業務', '交貨方式', '產品分類', '品名', '幣別', '數量', '已出數量', '未出數', '單價', '集團匯率', '集團匯率*金額', '客戶料號',
                    '客戶希交日',

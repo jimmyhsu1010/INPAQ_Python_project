@@ -7,8 +7,8 @@ pd.set_option('mode.chained_assignment', None)
 
 
 def menu():
-    # os.system("cls")
-    os.system('clear')
+    os.system("cls")
+    # os.system('clear')
     print("週報數據前處理系統")
     print("---------------------------")
     print("1. 天線數據前處理")

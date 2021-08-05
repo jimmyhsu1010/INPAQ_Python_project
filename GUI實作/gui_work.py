@@ -8,7 +8,7 @@ window.title('INPAQ工作小程式')  # 設定程式標題
 window.geometry('400x300+1200+100')  # 設定視窗大小，後面+1200+100為開啟程式的時候x先向右移動1200，y再向下移動100
 # window.minsize(width=400, height=300) # 自定最小尺寸
 # window.maxsize(width=1200, height=900) # 自定最大尺寸
-window.resizable(False, False)  # 固定尺寸，無法縮放，使用True或False
+window.resizable(True, False)  # 固定尺寸，無法縮放，使用True或False，前面是寬度，後面是高度可調整
 
 window.iconbitmap(bitmap='inpaq_logo.ico')  # 建議使用副檔名為ico的檔案，需要和GUI放在同一路徑下
 window.config(background='white')  # 設定視窗底色，可以用色碼表
@@ -43,8 +43,8 @@ def bt():
 # 使用button元件
 
 btn = tk.Button(text='Enter', command=ok)
-# btn.config(bg='blue')
-# btn.config(width=2, height=2) # 這裡面的數字不是按照像素，而是按照網格
+btn.config(bg='blue')
+btn.config(width=1, height=1) # 這裡面的數字不是按照像素，而是按照網格
 # btn.config(image=img) # 將按鈕插入圖片
 btn.grid(row=0, column=2)
 

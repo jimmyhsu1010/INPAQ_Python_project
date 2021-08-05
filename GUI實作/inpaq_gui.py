@@ -16,10 +16,10 @@ imagelabel = tk.Label(win, image=img)
 imagelabel.grid(row=0, column=2, columnspan=3, sticky=tk.E)
 
 sales_icon = tk.PhotoImage(file='sales_icon.png')
-sales_icon = sales_icon.subsample(6, 6)
-sales_button = tk.Button(win, text='業務專區', image=sales_icon, compound= tk.LEFT, command=Sales, bg='blue', width=8, font='微軟正黑體 20') # compound用來讓文字和圖片對齊
+sales_icon = sales_icon.subsample(10, 10)
+sales_button = tk.Button(win, text='業務專區', image=sales_icon, compound= tk.LEFT, command=Sales, bg='blue') # compound用來讓文字和圖片對齊
 sales_button.grid(row=1, column=0, sticky=tk.W+tk.E+tk.N+tk.S, padx=40, pady=5)
-# sales_button.config(width=6, height=4, font='微軟正黑體 20')
+sales_button.config(width=6, height=2, font='微軟正黑體 20')
 
 cs_button = tk.Button(win, text='CS專區')
 cs_button.grid(row=1, column=1, sticky=tk.W+tk.E+tk.N+tk.S, padx=40, pady=5)

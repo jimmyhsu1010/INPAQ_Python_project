@@ -103,7 +103,7 @@ def rf_etl():
         result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_rf_clean.xlsx', index=False)
         # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_rf_clean.xlsx", index=False)
-        result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_rf_clean.xlsx', index=False)
+        # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_rf_clean.xlsx', index=False)
 
         # 用Charlie的數據再使用下面程式碼
         # rf = pd.read_excel(path, sheet_name="RF")
@@ -192,7 +192,7 @@ def zhunan_etl():
         # result['集團匯率*金額'] = result['集團匯率*金額'].astype(int)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_component_clean.xlsx', index=False)
         # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_component_clean.xlsx", index=False)
-        result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_component_clean.xlsx', index=False)
+        # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_component_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
 
@@ -243,7 +243,7 @@ def wuxi_etl():
         df = df[df["負責業務"] == "鄭里緗"]
         df.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_小顧_clean.xlsx', index=False)
         # df.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_小顧_clean.xlsx", index=False)
-        df.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_小顧_clean.xlsx', index=False)
+        # df.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_小顧_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
 
@@ -257,7 +257,7 @@ def combine_files():
         result = pd.concat(files_list, axis=0)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\匯總數據_final.xlsx', index=False)
         # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\匯總數據_final.xlsx", index=False)
-        result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/匯總數據_final.xlsx', index=False)
+        # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/匯總數據_final.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
 

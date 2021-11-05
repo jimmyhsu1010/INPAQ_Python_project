@@ -7,13 +7,13 @@ class Sales(tk.Tk):
     def __init__(self):
         super().__init__()
         self.title('業務專區')
-        self.geometry('1440x900')
+        self.geometry('1280x600')
         self.open_file = tk.Button(self, text='開啟檔案', command=self.open_file)
         self.open_file.grid(row=0, column=0)
         self.return_main = tk.Button(self, text='返回主畫面', command=self.destroy)
         self.return_main.grid(row=0, column=1)
         self.frame1 = tk.LabelFrame(self, text='預覽結果')
-        self.frame1.place(x=10, y=25, width=1415, height=500)
+        self.frame1.place(x=10, y=25, width=1200, height=500)
         self.tv1 = ttk.Treeview(self.frame1)
         self.tv1.place(relheight=1, relwidth=1) # set the height and width of the widget to 100% of its container (frame1).
         treescrolly = tk.Scrollbar(self.frame1, orient="vertical",

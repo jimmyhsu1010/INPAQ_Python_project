@@ -184,7 +184,8 @@ def zhunan_etl():
                    'TERM', '出通單號', 'BU']
         result = zhunan.reindex(columns=columns)
         result["負責業務"] = result["負責業務"].map(lambda x: "許凱智" if x == "许凯智" else x)
-        result = result[result["負責業務"].isin(['鄭里緗', '許凱智', '墨漢雷迪'])]
+        result = result[(result["負責業務"].isin(['鄭里緗', '許凱智', '墨漢雷迪'])) | (result['客戶名稱'] == 'FEC')]
+        result["負責業務"] = result["負責業務"].map(lambda x: "許凱智" if x == "王玫心" else x)
         result['數量'] = result['數量'].astype(int)
         result['已出數量'] = result['已出數量'].astype(int)
         result['未出數'] = result['未出數'].astype(int)
@@ -255,6 +256,7 @@ def combine_files():
         for file in paths:
             files_list.append(pd.read_excel(file))
         result = pd.concat(files_list, axis=0)
+        result = result.drop_duplicates(['銷售單號', '銷售項次'], keep='last')
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\匯總數據_final.xlsx', index=False)
         # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\匯總數據_final.xlsx", index=False)
         # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/匯總數據_final.xlsx', index=False)

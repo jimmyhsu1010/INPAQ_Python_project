@@ -258,7 +258,7 @@ def combine_files():
         result = pd.concat(files_list, axis=0)
         result = result.drop_duplicates(['銷售單號', '銷售項次'], keep='last')
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\匯總數據_final.xlsx', index=False)
-        result.to_excel(r"C:\Users\kaihsu\OneDrive\INPAQ\業績總表\2021_小顧_clean.xlsx", index=False)
+        result.to_excel(r"C:\Users\kaihsu\OneDrive\INPAQ\業績總表\匯總數據_final.xlsx", index=False)
         # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/匯總數據_final.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break

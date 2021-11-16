@@ -102,7 +102,7 @@ def rf_etl():
         result['未出數'] = result['未出數'].astype(int)
         result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_rf_clean.xlsx', index=False)
-        # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_rf_clean.xlsx", index=False)
+        result.to_excel(r"C:\Users\kaihsu\OneDrive\INPAQ\業績總表\2021_rf_clean.xlsx", index=False)
         # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_rf_clean.xlsx', index=False)
 
         # 用Charlie的數據再使用下面程式碼
@@ -185,14 +185,14 @@ def zhunan_etl():
         result = zhunan.reindex(columns=columns)
         result["負責業務"] = result["負責業務"].map(lambda x: "許凱智" if x == "许凯智" else x)
         result = result[(result["負責業務"].isin(['鄭里緗', '許凱智', '墨漢雷迪'])) | (result['客戶名稱'] == 'FEC')]
-        result["負責業務"] = result["負責業務"].map(lambda x: "許凱智" if x == "王玫心" else x)
+        result["負責業務"] = result["負責業務"].map(lambda x: "許凱智" if x == "王玫心" or x == "郭瑞虎" else x)
         result['數量'] = result['數量'].astype(int)
         result['已出數量'] = result['已出數量'].astype(int)
         result['未出數'] = result['未出數'].astype(int)
         result['幣別'] = result['幣別'].map(lambda x: 'NTD' if x == 'TWD' else x)
         # result['集團匯率*金額'] = result['集團匯率*金額'].astype(int)
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_component_clean.xlsx', index=False)
-        # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_component_clean.xlsx", index=False)
+        result.to_excel(r"C:\Users\kaihsu\OneDrive\INPAQ\業績總表\2021_component_clean.xlsx", index=False)
         # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_component_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
@@ -243,7 +243,7 @@ def wuxi_etl():
         df['負責業務'] = df['負責業務'].map(lambda x: '鄭里緗' if x == '沈思明' or x == '鄭裡緗' else x)
         df = df[df["負責業務"] == "鄭里緗"]
         df.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\2021_小顧_clean.xlsx', index=False)
-        # df.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\2021_小顧_clean.xlsx", index=False)
+        df.to_excel(r"C:\Users\kaihsu\OneDrive\INPAQ\業績總表\2021_小顧_clean.xlsx", index=False)
         # df.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/2021_小顧_clean.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break
@@ -258,7 +258,7 @@ def combine_files():
         result = pd.concat(files_list, axis=0)
         result = result.drop_duplicates(['銷售單號', '銷售項次'], keep='last')
         result.to_excel(r'C:\Users\kaihsu\Desktop\業績總表\匯總數據_final.xlsx', index=False)
-        # result.to_excel(r"D:\pythonp_programming\INPAQ_Python_project\數據整理\業績總表\匯總數據_final.xlsx", index=False)
+        result.to_excel(r"C:\Users\kaihsu\OneDrive\INPAQ\業績總表\匯總數據_final.xlsx", index=False)
         # result.to_excel('/Users/kai/OneDrive/INPAQ/業績總表/匯總數據_final.xlsx', index=False)
         input("處理完畢，請按任意鍵回到主選單")
         break

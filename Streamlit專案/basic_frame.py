@@ -15,7 +15,7 @@ upper1.image(image, width=100)
 upper2.title("業務週報")
 
 # 先將出貨明細匯入
-df = pd.read_csv(r"/Users/kai/OneDrive/INPAQ/業績總表/各年度預算和實績.csv")
+df = pd.read_csv(r"C:\Users\kaihsu\OneDrive\INPAQ\業績總表\各年度預算和實績.csv")
 
 df['金額'] = df['金額'].astype('int')
 df['數量'] = df['數量'].astype('int')
